@@ -1,5 +1,7 @@
+imageio==2.6.1
+PyOpenGL==3.1.4
 pyrender==0.1.18 
-opencv-python 
+opencv-python==4.2.0.32
 h5py 
 svg.path 
 shapely 
@@ -8,8 +10,8 @@ python-fcl
 pyyaml 
 easydict 
 PySide 
-mayavi 
-rtree 
+#mayavi 
+rtree==0.8.3
 scipy 
 matplotlib
 
