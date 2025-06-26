@@ -1,5 +1,3 @@
-# This Dockerfile sets up a iDSDF environment with PyTorch (GPU).
-
 FROM tensorflow/tensorflow:1.12.0-devel-gpu
 
 SHELL ["/bin/bash", "-c"]
@@ -64,5 +62,4 @@ ENV QT_X11_NO_MITSHM=1
 ENV DISPLAY=:0
 
 WORKDIR /code-dir
-# ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "idsdf", "/bin/bash", "-c"]
 ENTRYPOINT ["/opt/misc/entrypoint.sh"]
