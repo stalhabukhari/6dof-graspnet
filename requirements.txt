@@ -10,8 +10,9 @@ python-fcl
 pyyaml 
 easydict 
 PySide 
-#mayavi 
 rtree==0.8.3
 scipy 
 matplotlib
-
+trimesh
+# for horovod
+psutil==6.1.1

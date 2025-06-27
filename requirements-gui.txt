@@ -1,0 +1,6 @@
+# for mayavi:
+vtk==8.1.2
+mayavi==4.6.2
+pyface==6.0.0
+traits==5.2.0
+traitsui==6.0.0
