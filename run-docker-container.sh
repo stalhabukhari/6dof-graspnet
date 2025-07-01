@@ -1,5 +1,7 @@
 #!/bin/bash
 
+DATADIR=$1
+
 # # ----- for GUI
 # VNC_PORT=5900
 # VNC_PASSWORD=112358
@@ -37,5 +39,5 @@
 #     -v "$(pwd)":"/code-dir" --name 6dofgraspnet 6dofgraspnet-image:latest /bin/bash
 
 # ------- without GUI -------
-docker run -it --rm --gpus all -v "$(pwd)":"/code-dir" \
+docker run -it --rm --gpus all -v "$(pwd)":"/code-dir" -v "$DATADIR":"/data-dir" \
   --name 6dofgraspnet 6dofgraspnet-image:latest /bin/bash

@@ -5,6 +5,7 @@
 # and any modifications thereto.  Any use, reproduction, disclosure or
 # distribution of this software and related documentation without an express
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
+from __future__ import absolute_import, division, print_function
 import argparse
 import os
 import json
@@ -110,7 +111,11 @@ def make_parser():
     parser.add_argument('--pointnet_radius', help='Radius for ball query for PointNet++, just the first layer', type=float, default=0.02)
     parser.add_argument('--pointnet_nclusters', help='Number of cluster centroids for PointNet++, just the first layer', type=int, default=128)
     parser.add_argument('--gan', type=int, default=0, help='If 1 uses gan formulation to train instead of vae')
-
+    
+    # for acronym
+    parser.add_argument("--acronym", action="store_true", default=False)
+    parser.add_argument("--full_pc", action="store_true", default=False)
+    parser.add_argument("--train_split_fp", type=str, default="dataset-train.yml")
    
     return parser
 

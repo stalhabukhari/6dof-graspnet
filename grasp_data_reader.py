@@ -23,7 +23,6 @@ try:
 except:
     from queue import Queue
 
-import tensorflow as tf
 from online_object_renderer import OnlineObjectRendererMultiProcess, OnlineObjectRenderer
 import random
 import glob

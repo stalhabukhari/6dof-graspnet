@@ -44,12 +44,12 @@ from tf_utils import get_shape
 import tf_utils
 import trimesh.transformations as tra
 import grasp_data_reader
+import grasp_data_reader_acr
 import sample
 from easydict import EasyDict as edict
 
 from tensorflow.python.training.summary_io import SummaryWriterCache
 
-from grasp_data_reader import evaluate_grasps
 from utils import get_files, set_seed, make_parser
 
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -583,18 +583,35 @@ def build_tf_ops(args, files, data_dict):
     pcreader = None
 
     if args.is_training:
-        pcreader = grasp_data_reader.PointCloudReader(
-            root_folder=args.dataset_root_folder,
-            batch_size=args.num_grasps_per_object,
-            num_grasp_clusters=args.num_grasp_clusters,
-            npoints=args.npoints,
-            min_difference_allowed=(0, 0, 0),
-            max_difference_allowed=(3, 3, 0),
-            occlusion_nclusters=0,
-            occlusion_dropout_rate=0.,
-            use_uniform_quaternions=args.use_uniform_quaternions,
-            ratio_of_grasps_used=args.grasps_ratio,
-        )
+        if args.acronym:
+            pcreader = grasp_data_reader_acr.PointCloudReaderAcr(
+                root_folder=args.dataset_root_folder,
+                batch_size=args.num_grasps_per_object,
+                num_grasp_clusters=args.num_grasp_clusters,
+                npoints=args.npoints,
+                min_difference_allowed=(0, 0, 0),
+                max_difference_allowed=(3, 3, 0),
+                occlusion_nclusters=0,
+                occlusion_dropout_rate=0.,
+                use_uniform_quaternions=args.use_uniform_quaternions,
+                ratio_of_grasps_used=args.grasps_ratio,
+                single_view=not args.full_pc,
+                run_in_another_process=True,  # for multiprocessing
+            )
+        else:
+            pcreader = grasp_data_reader.PointCloudReader(
+                root_folder=args.dataset_root_folder,
+                batch_size=args.num_grasps_per_object,
+                num_grasp_clusters=args.num_grasp_clusters,
+                npoints=args.npoints,
+                min_difference_allowed=(0, 0, 0),
+                max_difference_allowed=(3, 3, 0),
+                occlusion_nclusters=0,
+                occlusion_dropout_rate=0.,
+                use_uniform_quaternions=args.use_uniform_quaternions,
+                ratio_of_grasps_used=args.grasps_ratio,
+                run_in_another_process=True,  # for multiprocessing
+            )
 
     first_dimension = args.num_objects_per_batch * args.num_grasps_per_object
 
@@ -629,11 +646,22 @@ def main():
     
     if args.is_training:
 
-        files = get_files(args.dataset_root_folder, args.allowed_categories, args.blacklisted_categories, args.training_splits, args.splits_folder_name, args.grasps_folder_name)
-
+        if args.acronym:
+            assert not args.train_evaluator, 'Acronym dataset is not yet supported for training evaluator.'
+            # read train split
+            with open(args.train_split_fp, "r") as f:
+                train_split = yaml.safe_load(f)["train"]
+                
+            files = grasp_data_reader_acr.get_grasp_files(
+                args.dataset_root_folder,
+                train_split,
+                filter_good_grasps=True,
+            )
+        else:
+            files = get_files(args.dataset_root_folder, args.allowed_categories, args.blacklisted_categories, args.training_splits, args.splits_folder_name, args.grasps_folder_name)
+        
         random.shuffle(files)
-        print('files ====>', files)
-        print(len(files))
+        print("Total files:", len(files))
 
         main_train(args, files, config)
     else:
